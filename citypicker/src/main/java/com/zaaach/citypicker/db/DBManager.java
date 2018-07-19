@@ -64,20 +64,24 @@ public class DBManager {
         }
     }
 
-    public List<City> getAllCities(){
-        SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME, null);
-        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME, null);
+    public List<City> getAllCities() {
         List<City> result = new ArrayList<>();
-        City city;
-        while (cursor.moveToNext()){
-            String name = cursor.getString(cursor.getColumnIndex(NAME));
-            String pinyin = cursor.getString(cursor.getColumnIndex(PINYIN));
-            city = new City(name, pinyin);
-            result.add(city);
+        try {
+            SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME, null);
+            Cursor cursor = db.rawQuery("select * from " + TABLE_NAME, null);
+            City city;
+            while (cursor.moveToNext()) {
+                String name = cursor.getString(cursor.getColumnIndex(NAME));
+                String pinyin = cursor.getString(cursor.getColumnIndex(PINYIN));
+                city = new City(name, pinyin);
+                result.add(city);
+            }
+            cursor.close();
+            db.close();
+            Collections.sort(result, new CityComparator());
+        }catch (Exception e){
+            return  new ArrayList<>();
         }
-        cursor.close();
-        db.close();
-        Collections.sort(result, new CityComparator());
         return result;
     }
 
